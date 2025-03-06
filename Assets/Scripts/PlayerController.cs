@@ -51,13 +51,22 @@ public class PlayerController : MonoBehaviour
             lastGroundedTime = Time.time;
             hasJumped = false;
         }
+        else
+        {
+            hasJumped = true;
+        }
 
-        // Jumping with Coyote Time
-        if ((Input.GetKeyDown(KeyCode.Space) && !hasJumped) && (isGrounded || Time.time - lastGroundedTime <= coyoteTime))
+        // Jumping
+        if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || Time.time - lastGroundedTime <= coyoteTime) && !hasJumped)
         {
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             hasJumped = true;
+        }
+
+        if (Time.time - lastGroundedTime <= coyoteTime && hasJumped)
+        {
+            isGrounded = false;
         }
     }
 }
