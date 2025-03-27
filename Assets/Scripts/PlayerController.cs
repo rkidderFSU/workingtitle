@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
         
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
-        if (horizontalInput > 0.1 || horizontalInput < -0.1 || verticalInput > 0.1 || verticalInput < -0.1)
+        if ((horizontalInput > 0.1 || horizontalInput < -0.1 || verticalInput > 0.1 || verticalInput < -0.1) && !animator.GetBool("Jump"))
         {
             animator.SetBool("Walking", true);
         } else
@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
         {
             lastGroundedTime = Time.time;
             hasJumped = false;
+            animator.SetBool("Jump", false);
         }
         else
         {
@@ -74,6 +75,7 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             hasJumped = true;
+            animator.Play("Jump");
         }
 
         if (Time.time - lastGroundedTime <= coyoteTime && hasJumped)

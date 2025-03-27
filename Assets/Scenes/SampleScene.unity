@@ -435,14 +435,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2529919795975368248, guid: ae83547b785bca848a22752103bc8305, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 4a902deea48ff4149ba5aac0ab83e185, type: 2}
+    - target: {fileID: 2529919795975368248, guid: ae83547b785bca848a22752103bc8305, type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'leftfoot'\n\tTransform 'leftknee'\n\tTransform
-        'rightelbow'\n\tTransform 'rightheel'\n\tTransform 'leftheel'\n\tTransform
-        'rightlegjoint'\n\tTransform 'leftleg'\n\tTransform 'leftelbow'\n\tTransform
-        'rightknee'\n\tTransform 'leftshoulder'\n\tand more ...\n\tFrom animation
-        clip 'Walking'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2529919795975368248, guid: ae83547b785bca848a22752103bc8305, type: 3}
       propertyPath: m_ApplyRootMotion
