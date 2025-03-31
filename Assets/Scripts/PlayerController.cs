@@ -7,78 +7,92 @@ public class PlayerController : MonoBehaviour
 {
     Rigidbody rb;
     public float movementSpeed;
-    [SerializeField] private float coyoteTime = 0.2f;
-    private float lastGroundedTime;
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private LayerMask groundLayer; // Assign this in the Inspector
-    [SerializeField] private Transform groundCheck; // Empty GameObject positioned at the player's feet
-    [SerializeField] private float groundCheckRadius = 0.2f;
     private bool isGrounded;
-    private bool hasJumped;
     private Animator animator;
+
+    float horizontalInput;
+    float verticalInput;
+
+    bool canMove;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+
+        canMove = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Movement();
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
+
+        if (canMove)
+        {
+            Movement();
+        }
+        CombatFunction();
     }
 
     void Movement()
     {
-        
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-        if ((horizontalInput > 0.1 || horizontalInput < -0.1 || verticalInput > 0.1 || verticalInput < -0.1) && !animator.GetBool("Jump"))
-        {
-            animator.SetBool("Walking", true);
-        } else
-        {
-            animator.SetBool("Walking", false);
-
-        }
-
         // Get the current velocity
         Vector3 currentVelocity = rb.velocity;
-
-
         // Calculate movement direction based on input
         Vector3 movement = (transform.forward * verticalInput + transform.right * horizontalInput) * movementSpeed;
-        
         // Preserve Y-axis velocity so gravity and jumping still work properly
         rb.velocity = new Vector3(movement.x, currentVelocity.y, movement.z);
 
-        // Ground check using Physics.CheckSphere
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
-
-        // Update last grounded time
-        if (isGrounded)
-        {
-            lastGroundedTime = Time.time;
-            hasJumped = false;
-            animator.SetBool("Jump", false);
-        }
-        else
-        {
-            hasJumped = true;
-        }
+        // Update Animator Parameters
+        animator.SetFloat("moveSpeed", movement.magnitude);
 
         // Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || Time.time - lastGroundedTime <= coyoteTime) && !hasJumped)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            hasJumped = true;
-            animator.Play("Jump");
+            animator.SetBool("Jump", true);
         }
+    }
 
-        if (Time.time - lastGroundedTime <= coyoteTime && hasJumped)
+    void CombatFunction()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            // Trigger block animation
+            animator.SetBool("Blocking", true);
+            canMove = false; // Disables movement while blocking
+            Debug.Log("block");
+        }
+        if (Input.GetMouseButtonDown(0)) // Left click
+        {
+            // Trigger punch animation
+            animator.SetBool("Punch", true);
+            Debug.Log("punch");
+        }
+        if (Input.GetMouseButtonDown(1)) // Right click
+        {
+            // Trigger kick animation
+            animator.SetBool("Kick", true);
+            Debug.Log("kick");
+        }
+    }
+
+    // Detect Ground
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+            animator.SetBool("Jump", false);
+        }
+    }
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
         }
