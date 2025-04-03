@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     float verticalInput;
 
     bool canMove;
+    bool blocking;
 
     // Start is called before the first frame update
     void Start()
@@ -60,23 +61,32 @@ public class PlayerController : MonoBehaviour
 
     void CombatFunction()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             // Trigger block animation
             animator.SetBool("Blocking", true);
+            blocking = true;
             canMove = false; // Disables movement while blocking
             Debug.Log("block");
         }
-        if (Input.GetMouseButtonDown(0)) // Left click
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            // Stop block animation
+            animator.SetBool("Blocking", false);
+            blocking = false;
+            canMove = true; // Re-enables movement
+            Debug.Log("not block");
+        }
+        if (Input.GetMouseButtonDown(0) && !blocking) // Left click
         {
             // Trigger punch animation
-            animator.SetBool("Punch", true);
+            animator.SetTrigger("Punch");
             Debug.Log("punch");
         }
-        if (Input.GetMouseButtonDown(1)) // Right click
+        if (Input.GetMouseButtonDown(1) && !blocking) // Right click
         {
             // Trigger kick animation
-            animator.SetBool("Kick", true);
+            animator.SetTrigger("Kick");
             Debug.Log("kick");
         }
     }
